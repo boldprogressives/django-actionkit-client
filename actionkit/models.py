@@ -125,3 +125,41 @@ class CoreActionField(models.Model):
     class Meta:
         db_table = 'core_actionfield'
         managed = False
+
+class EventCampaign(models.Model):
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    title = models.CharField(max_length=765)
+    name = models.CharField(max_length=765)
+    
+    public_create_page = models.BooleanField()
+    public_search_page = models.BooleanField()
+    use_title = models.BooleanField()
+    show_title = models.BooleanField()
+    show_venue = models.BooleanField()
+    show_address1 = models.BooleanField()
+    show_city = models.BooleanField()
+    show_state = models.BooleanField()
+    show_zip = models.BooleanField()
+    show_public_description = models.BooleanField()
+    show_directions = models.BooleanField()
+    show_attendee_count = models.BooleanField()
+
+    starts_at = models.DateTimeField(null=True)
+    
+    use_start_date = models.BooleanField()
+    use_start_time = models.BooleanField()
+    require_staff_approval = models.BooleanField()
+    require_email_confirmation = models.BooleanField()
+    allow_private = models.BooleanField()
+
+    max_event_size = models.IntegerField(null=True)
+    default_event_size = models.IntegerField(null=True)
+
+    default_title = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = "events_campaign"
+        managed = False
