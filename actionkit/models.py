@@ -163,3 +163,31 @@ class EventCampaign(models.Model):
     class Meta:
         db_table = "events_campaign"
         managed = False
+
+class CmsPetitionForm(models.Model):
+    id = models.IntegerField(primary_key=True)
+    page = models.OneToOneField(CorePage)
+    templateset_id = models.IntegerField()
+
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    
+    client_hosted = models.BooleanField()
+    client_url = models.CharField(max_length=255, blank=True)
+    
+    thank_you_text = models.TextField()
+    statement_leadin = models.TextField()
+    statement_text = models.TextField()
+    about_text = models.TextField()
+    
+    class Meta:
+        db_table = u'cms_petition_form'
+        managed = False
+
+class CorePageFollowup(models.Model):
+    id = models.IntegerField(primary_key=True)
+    page = models.OneToOneField(CorePage)
+
+    class Meta:
+        db_table = u'core_pagefollowup'
+        managed = False
