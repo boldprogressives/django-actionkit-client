@@ -24,3 +24,8 @@ DATABASES = {
 CONTEXT_PROCESSORS = [
     'actionkit.context_processors.globals',
     ]
+
+URLCONFS = [
+    (r'^admin/actionkit/test_connection/', 
+     'actionkit.views.actionkit_test_connection'),
+    ]
