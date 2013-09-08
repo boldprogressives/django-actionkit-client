@@ -20,3 +20,7 @@ DATABASES = {
         'PORT': "",
         }
     }
+
+CONTEXT_PROCESSORS = [
+    'actionkit.context_processors.globals',
+    ]
