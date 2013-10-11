@@ -1,4 +1,5 @@
 from actionkit.utils import get_client as Client
+import os
 
 ACTIONKIT_API_HOST = os.environ['ACTIONKIT_API_HOST']
 ACTIONKIT_API_USER = os.environ['ACTIONKIT_API_USER']
