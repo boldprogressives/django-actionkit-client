@@ -5,6 +5,12 @@ ACTIONKIT_API_HOST = os.environ['ACTIONKIT_API_HOST']
 ACTIONKIT_API_USER = os.environ['ACTIONKIT_API_USER']
 ACTIONKIT_API_PASSWORD = os.environ['ACTIONKIT_API_PASSWORD']
 
+SETTINGS = {
+    'ACTIONKIT_API_HOST': ACTIONKIT_API_HOST,
+    'ACTIONKIT_API_USER': ACTIONKIT_API_USER,
+    'ACTIONKIT_API_PASSWORD': ACTIONKIT_API_PASSWORD,
+    }
+
 ACTIONKIT_DATABASE_NAME = os.environ['ACTIONKIT_DATABASE_NAME']
 ACTIONKIT_DATABASE_USER = os.environ['ACTIONKIT_DATABASE_USER']
 ACTIONKIT_DATABASE_PASSWORD = os.environ['ACTIONKIT_DATABASE_PASSWORD']
@@ -26,7 +32,8 @@ CONTEXT_PROCESSORS = [
     'actionkit.context_processors.globals',
     ]
 
+
 URLCONFS = [
-    (r'^admin/actionkit/test_connection/', 
-     'actionkit.views.actionkit_test_connection'),
+    (r'', 'actionkit.urls'),
     ]
+
