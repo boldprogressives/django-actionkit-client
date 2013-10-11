@@ -1,5 +1,11 @@
 from django.db import models
 
+class CoreLanguage(models.Model):
+    name = models.TextField()
+    class Meta:
+        db_table = u'core_language'
+        managed = False
+
 class CoreUser(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
@@ -125,6 +131,33 @@ class CoreActionField(models.Model):
     class Meta:
         db_table = 'core_actionfield'
         managed = False
+
+class CoreTag(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255, unique=True)
+    class Meta:
+        db_table = u'core_tag'
+        managed = False
+    
+class CorePageTag(models.Model):
+    id = models.IntegerField(primary_key=True)
+    page = models.ForeignKey(CorePage, related_name="pagetags")
+    tag = models.ForeignKey(CoreTag, related_name="pagetags")
+    class Meta:
+        db_table = u'core_page_tags'
+        managed = False
+
+class CoreOrder(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    user = models.ForeignKey(CoreUser, related_name="orders")
+    action = models.ForeignKey(CoreAction, related_name="orders")
+    total = models.FloatField(max_length=255, unique=True)
+    status = models.CharField(max_length=255)
+    class Meta:
+        db_table = u'core_order'
+        managed = False
+
 
 class EventCampaign(models.Model):
     id = models.IntegerField(primary_key=True)
