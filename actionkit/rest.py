@@ -1,6 +1,8 @@
+from actionkit.models import QueryReport
 from django.conf import settings
 import json
 import requests
+from requests.auth import HTTPBasicAuth
 
 def request(url, method, **kw):
     return getattr(requests, method)(
@@ -116,3 +118,75 @@ class ClientResourceHandler(object):
         id = location[len(self.base_url):]
         id = id.strip("/")
         return id
+
+def create_report(sql, description, name, short_name):
+    host = settings.ACTIONKIT_API_HOST
+    if not host.startswith("https"):
+        host = "https://" + host
+
+    data = json.dumps(dict(sql=sql, description=description, 
+                           name=name, short_name=short_name,
+                           hidden=True, 
+                           #refresh=True, full_recalc=True,
+                           ))
+
+    url = "%s/rest/v1/queryreport/" % host
+    resp = requests.post(url, auth=HTTPBasicAuth(
+            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
+                         headers={'content-type': 'application/json'},
+                         data=data)
+    assert resp.status_code == 201, resp.text
+    location = resp.headers['Location']
+    return {"id": location.strip("/").split("/")[-1], "short_name": short_name}
+
+def unhide_report(report_id):
+    host = settings.ACTIONKIT_API_HOST
+    if not host.startswith("https"):
+        host = "https://" + host
+
+    report = QueryReport.objects.using("ak").select_related("report_ptr").get(
+        report_ptr__id=report_id)
+    data = json.dumps(dict(hidden=False, 
+                           sql=report.sql, name=report.report_ptr.name,
+                           short_name=report.report_ptr.short_name))
+    url = "%s/rest/v1/queryreport/%s/" % (host, report_id)
+
+    resp = requests.put(url, auth=HTTPBasicAuth(
+            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
+                        headers={'content-type': 'application/json'},
+                        data=data)
+    assert resp.status_code == 201
+
+def delete_report(report_id):
+    host = settings.ACTIONKIT_API_HOST
+    if not host.startswith("https"):
+        host = "https://" + host
+
+    url = "%s/rest/v1/queryreport/%s/" % (host, report_id)
+    resp = requests.delete(url, auth=HTTPBasicAuth(
+            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD))
+    assert resp.status_code == 204
+
+def run_report(name, email_to=None, data=None):
+    host = settings.ACTIONKIT_API_HOST
+    if not host.startswith("https"):
+        host = "https://" + host
+
+    data = data or {}
+    data['refresh'] = True
+    data['full_recalc'] = True
+    
+    if email_to is not None:
+        data['use_email'] = True
+        data['email'] = email_to
+    
+    url = "%s/rest/v1/report/background/%s/" % (host, name)
+    resp = requests.post(url, auth=HTTPBasicAuth(
+            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
+                         data=data,
+                         headers={'Accept': "text/csv"})
+
+    assert resp.status_code == 201
+    location = resp.headers['Location']
+    return location.strip("/").split("/")[-1]
+

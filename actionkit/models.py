@@ -1,5 +1,20 @@
 from django.db import models
 
+class Report(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255, unique=True)
+    short_name = models.CharField(max_length=255, unique=True)
+    class Meta:
+        db_table = u'reports_report'
+        managed = False
+
+class QueryReport(models.Model):
+    report_ptr = models.ForeignKey(Report, primary_key=True)
+    sql = models.TextField()
+    class Meta:
+        db_table = u'reports_queryreport'
+        managed = False
+
 class CoreLanguage(models.Model):
     name = models.TextField()
     class Meta:
