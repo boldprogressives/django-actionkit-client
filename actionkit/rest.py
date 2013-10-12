@@ -190,3 +190,19 @@ def run_report(name, email_to=None, data=None):
     location = resp.headers['Location']
     return location.strip("/").split("/")[-1]
 
+def poll_report(akid):
+
+    host = settings.ACTIONKIT_API_HOST
+    if not host.startswith("https"):
+        host = "https://" + host
+
+    url = "%s/rest/v1/backgroundtask/%s/" % (host, akid)
+    resp = requests.get(url, auth=HTTPBasicAuth(
+            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
+                        headers={'content-type': 'application/json'})
+
+    assert resp.status_code == 200
+    results = json.loads(resp.content)
+
+    return results
+
