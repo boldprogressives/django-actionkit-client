@@ -173,6 +173,68 @@ class CoreOrder(models.Model):
         db_table = u'core_order'
         managed = False
 
+class CoreMailing(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    html = models.TextField()
+    text = models.TextField()
+    status = models.CharField(max_length=255)
+    class Meta:
+        db_table = u'core_mailing'
+        managed = False
+
+class CoreMailingSubject(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    text = models.CharField(max_length=255)
+    mailing = models.ForeignKey(CoreMailing)
+    class Meta:
+        db_table = u'core_mailingsubject'
+        managed = False
+
+class CoreClickUrl(models.Model):
+    id = models.IntegerField(primary_key=True)
+    url = models.CharField(max_length=255)
+    created_at = models.DateTimeField()
+    page = models.ForeignKey(CorePage)
+    class Meta:
+        db_table = u'core_clickurl'
+        managed = False
+
+class CoreClick(models.Model):
+    clickurl = models.ForeignKey(CoreClickUrl)
+    user = models.ForeignKey(CoreUser)
+    mailing = models.ForeignKey(CoreMailing)
+    link_number = models.IntegerField(null=True)
+    source = models.CharField(max_length=255)
+    referring_user_id = models.IntegerField(null=True)
+    created_at = models.DateTimeField(primary_key=True)
+    class Meta:
+        db_table = u'core_click'
+        managed = False
+
+class CoreOpen(models.Model):
+    user = models.ForeignKey(CoreUser, related_name="email_opens")
+    mailing = models.ForeignKey(CoreMailing)
+    created_at = models.DateTimeField(primary_key=True)
+    class Meta:
+        db_table = u'core_open'
+        managed = False
+
+class CoreUserMailing(models.Model):
+    mailing = models.ForeignKey(CoreMailing)
+    user = models.ForeignKey(CoreUser)
+    subject = models.ForeignKey(CoreMailingSubject)
+    created_at = models.DateTimeField(primary_key=True)    
+    class Meta:
+        db_table = u'core_usermailing'
+        managed = False
+
+    def to_json(self):
+        return dict(
+            created_at=self.created_at,
+            subject_text=self.subject.text,
+            )
 
 class EventCampaign(models.Model):
     id = models.IntegerField(primary_key=True)
