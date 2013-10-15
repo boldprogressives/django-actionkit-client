@@ -301,3 +301,78 @@ class CorePageFollowup(models.Model):
     class Meta:
         db_table = u'core_pagefollowup'
         managed = False
+
+from django.db import connections
+from django.utils.datastructures import SortedDict
+
+def dictfetchall(cursor):
+    "Returns all rows from a cursor as a dict"
+    desc = cursor.description
+    return [
+        SortedDict(zip([col[0] for col in desc], row))
+        for row in cursor.fetchall()
+    ]
+
+def opens_by_user(user):
+    cursor = connections['ak'].cursor()
+    sql = """
+SELECT open.mailing_id, open.created_at,
+       subject.text AS subject_text,
+       mailing.created_at AS mailed_at
+FROM core_open open
+LEFT JOIN core_mailing mailing
+  ON mailing.id=open.mailing_id
+LEFT JOIN core_usermailing usermailing
+  ON open.mailing_id=usermailing.mailing_id 
+  AND open.user_id=usermailing.user_id
+LEFT JOIN core_mailingsubject subject 
+  ON subject.id=usermailing.subject_id
+WHERE open.user_id=%s
+ORDER BY created_at DESC"""
+    cursor.execute(sql, [user.id])
+    return dictfetchall(cursor)
+
+def clicks_by_user(user):
+    cursor = connections['ak'].cursor()
+    sql = """
+SELECT click.mailing_id, click.created_at, 
+       subject.text AS subject_text,
+       mailing.created_at AS mailed_at
+FROM core_click click
+LEFT JOIN core_mailing mailing 
+  ON mailing.id=click.mailing_id
+LEFT JOIN core_usermailing usermailing
+  ON click.mailing_id=usermailing.mailing_id 
+  AND click.user_id=usermailing.user_id
+LEFT JOIN core_mailingsubject subject 
+  ON subject.id=usermailing.subject_id
+WHERE click.user_id=%s
+ORDER BY created_at DESC"""
+    cursor.execute(sql, [user.id])
+    return dictfetchall(cursor)
+
+def mailings_by_user(user):
+    cursor = connections['ak'].cursor()
+    sql = """
+SELECT usermailing.id as usermailing_id,
+       mailing.id as id,
+       mailing.created_at as mailed_at,
+       click.created_at as clicked_at, 
+       subject.text AS subject_text,
+       open.created_at as opened_at
+FROM core_usermailing usermailing
+LEFT JOIN core_mailingsubject subject 
+  ON subject.id=usermailing.subject_id
+LEFT JOIN core_mailing mailing
+  ON mailing.id=usermailing.mailing_id
+LEFT JOIN core_click click
+  ON click.mailing_id=usermailing.mailing_id
+  AND click.user_id=usermailing.user_id
+LEFT JOIN core_open open
+  ON open.mailing_id=usermailing.mailing_id
+  AND open.user_id=usermailing.user_id
+WHERE usermailing.user_id=%s
+ORDER BY usermailing.created_at DESC"""
+    cursor.execute(sql, [user.id])
+    return dictfetchall(cursor)
+
