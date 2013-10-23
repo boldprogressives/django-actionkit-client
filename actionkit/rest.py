@@ -119,6 +119,20 @@ class ClientResourceHandler(object):
         id = id.strip("/")
         return id
 
+def run_query(sql):
+    host = settings.ACTIONKIT_API_HOST
+    if not host.startswith("https"):
+        host = "https://" + host
+    
+    url = "%s/rest/v1/report/run/sql/" % host
+    resp = requests.post(url, auth=HTTPBasicAuth(
+            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
+                         headers={'content-type': 'application/json',
+                                  'accept': 'application/json'},
+                         data=json.dumps({'query': sql}))
+    assert resp.status_code == 200, resp.text
+    return resp.json()
+
 def create_report(sql, description, name, short_name):
     host = settings.ACTIONKIT_API_HOST
     if not host.startswith("https"):

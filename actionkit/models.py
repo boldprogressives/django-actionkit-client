@@ -4,6 +4,12 @@ class Report(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
     short_name = models.CharField(max_length=255, unique=True)
+
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    description = models.TextField()
+
     class Meta:
         db_table = u'reports_report'
         managed = False
