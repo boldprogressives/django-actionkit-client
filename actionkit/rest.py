@@ -4,7 +4,11 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
+TIMEOUT = getattr(settings, 'ACTIONKIT_API_TIMEOUT', None)
+
 def request(url, method, **kw):
+    if 'timeout' not in kw and TIMEOUT is not None:
+        kw['timeout'] = TIMEOUT
     return getattr(requests, method)(
         url, allow_redirects=False, 
         auth=(settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
@@ -129,7 +133,8 @@ def run_query(sql):
             settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
                          headers={'content-type': 'application/json',
                                   'accept': 'application/json'},
-                         data=json.dumps({'query': sql}))
+                         data=json.dumps({'query': sql}),
+                         timeout=TIMEOUT)
     assert resp.status_code == 200, resp.text
     return resp.json()
 
@@ -148,7 +153,8 @@ def create_report(sql, description, name, short_name):
     resp = requests.post(url, auth=HTTPBasicAuth(
             settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
                          headers={'content-type': 'application/json'},
-                         data=data)
+                         data=data,
+                         timeout=TIMEOUT)
     assert resp.status_code == 201, resp.text
     location = resp.headers['Location']
     return {"id": location.strip("/").split("/")[-1], "short_name": short_name}
@@ -168,7 +174,8 @@ def unhide_report(report_id):
     resp = requests.put(url, auth=HTTPBasicAuth(
             settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
                         headers={'content-type': 'application/json'},
-                        data=data)
+                        data=data,
+                        timeout=TIMEOUT)
     assert resp.status_code == 201
 
 def delete_report(report_id):
@@ -178,7 +185,8 @@ def delete_report(report_id):
 
     url = "%s/rest/v1/queryreport/%s/" % (host, report_id)
     resp = requests.delete(url, auth=HTTPBasicAuth(
-            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD))
+            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
+                           timeout=TIMEOUT)
     assert resp.status_code == 204
 
 def run_report(name, email_to=None, data=None):
@@ -198,7 +206,8 @@ def run_report(name, email_to=None, data=None):
     resp = requests.post(url, auth=HTTPBasicAuth(
             settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
                          data=data,
-                         headers={'Accept': "text/csv"})
+                         headers={'Accept': "text/csv"},
+                         timeout=TIMEOUT)
 
     assert resp.status_code == 201
     location = resp.headers['Location']
@@ -213,7 +222,8 @@ def poll_report(akid):
     url = "%s/rest/v1/backgroundtask/%s/" % (host, akid)
     resp = requests.get(url, auth=HTTPBasicAuth(
             settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
-                        headers={'content-type': 'application/json'})
+                        headers={'content-type': 'application/json'},
+                        timeout=TIMEOUT)
 
     assert resp.status_code == 200
     results = json.loads(resp.content)
