@@ -180,6 +180,19 @@ class CoreOrder(models.Model):
         db_table = u'core_order'
         managed = False
 
+class CoreTransaction(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    type = models.CharField(max_length=255)
+    order = models.ForeignKey(CoreOrder, related_name="transactions")
+    account = models.CharField(max_length=255)
+    amount = models.FloatField()
+    success = models.BooleanField()
+    status = models.CharField(max_length=255)
+    class Meta:
+        db_table = u'core_transaction'
+        managed = False
+
 class CoreMailing(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
