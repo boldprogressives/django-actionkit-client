@@ -174,7 +174,7 @@ class CoreOrder(models.Model):
     updated_at = models.DateTimeField()
     user = models.ForeignKey(CoreUser, related_name="orders")
     action = models.ForeignKey(CoreAction, related_name="orders")
-    total = models.FloatField(max_length=255, unique=True)
+    total = models.FloatField()
     status = models.CharField(max_length=255)
     class Meta:
         db_table = u'core_order'
