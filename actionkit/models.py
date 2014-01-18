@@ -194,6 +194,24 @@ class CoreTransaction(models.Model):
         db_table = u'core_transaction'
         managed = False
 
+class CoreOrderRecurring(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    order = models.ForeignKey(CoreOrder, related_name="recurrences")
+    action = models.ForeignKey(CoreAction, related_name="recurrences")
+    exp_date = models.CharField(max_length=6)
+    recurring_id = models.CharField(max_length=255)
+    account = models.CharField(max_length=255, null=True)
+    user = models.ForeignKey(User, related_name="recurrences")
+    start = models.DateField()
+    occurrences = models.IntegerField(null=TruE)
+    period = models.CharField(max_length=255)
+    amount = models.FloatField()
+    status = models.CharField(max_length=255)
+    class Meta:
+        db_table = u'core_orderrecurring'
+        managed = False
+
 class CoreMailing(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
