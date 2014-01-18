@@ -49,7 +49,7 @@ class CoreUser(models.Model):
     plus4 = models.CharField(max_length=12)
     country = models.CharField(max_length=765)
     source = models.CharField(max_length=765)
-    #lang = models.ForeignKey(CoreLanguage, null=True, blank=True)
+    lang = models.ForeignKey(CoreLanguage, null=True, blank=True)
     rand_id = models.IntegerField()
     class Meta:
         db_table = u'core_user'
@@ -167,6 +167,7 @@ class CorePageTag(models.Model):
     class Meta:
         db_table = u'core_page_tags'
         managed = False
+
 
 class CoreOrder(models.Model):
     created_at = models.DateTimeField()
