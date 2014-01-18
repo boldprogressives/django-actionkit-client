@@ -176,6 +176,7 @@ class CoreOrder(models.Model):
     action = models.ForeignKey(CoreAction, related_name="orders")
     total = models.FloatField()
     status = models.CharField(max_length=255)
+    import_id = models.CharField(max_length=32, null=True)
     class Meta:
         db_table = u'core_order'
         managed = False
