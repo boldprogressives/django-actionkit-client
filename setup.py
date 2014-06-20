@@ -19,7 +19,6 @@ setup(name='django-actionkit-client',
       zip_safe=False,
       install_requires=[
         "requests",
-        "mysql-python",
       ],
       entry_points="""
       [django.plugins]
