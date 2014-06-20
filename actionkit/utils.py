@@ -1,4 +1,12 @@
-from django.conf import settings
+try:
+    from django.conf import settings
+except ImportError:
+    import os
+    class Settings(object):
+        def __getattr__(self, attr):
+            return os.environ[attr]
+    settings = Settings()
+
 from urlparse import urlparse
 import xmlrpclib
 

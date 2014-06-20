@@ -11,29 +11,35 @@ SETTINGS = {
     'ACTIONKIT_API_PASSWORD': ACTIONKIT_API_PASSWORD,
     }
 
-ACTIONKIT_DATABASE_NAME = os.environ['ACTIONKIT_DATABASE_NAME']
-ACTIONKIT_DATABASE_USER = os.environ['ACTIONKIT_DATABASE_USER']
-ACTIONKIT_DATABASE_PASSWORD = os.environ['ACTIONKIT_DATABASE_PASSWORD']
+try:
+    import django
+except ImportError:
+    djang = None
 
-APIHANGAR_DATABASES = [("ak", "Actionkit")]
+if django is not None:
+    ACTIONKIT_DATABASE_NAME = os.environ['ACTIONKIT_DATABASE_NAME']
+    ACTIONKIT_DATABASE_USER = os.environ['ACTIONKIT_DATABASE_USER']
+    ACTIONKIT_DATABASE_PASSWORD = os.environ['ACTIONKIT_DATABASE_PASSWORD']
+    
+    APIHANGAR_DATABASES = [("ak", "Actionkit")]
 
-DATABASES = {
-    'ak': {
-        'ENGINE': "django.db.backends.mysql",
-        'NAME': ACTIONKIT_DATABASE_NAME,
-        'USER': ACTIONKIT_DATABASE_USER,
-        'PASSWORD': ACTIONKIT_DATABASE_PASSWORD,
-        'HOST': "client-db.actionkit.com",
-        'PORT': "",
+    DATABASES = {
+        'ak': {
+            'ENGINE': "django.db.backends.mysql",
+            'NAME': ACTIONKIT_DATABASE_NAME,
+            'USER': ACTIONKIT_DATABASE_USER,
+            'PASSWORD': ACTIONKIT_DATABASE_PASSWORD,
+            'HOST': "client-db.actionkit.com",
+            'PORT': "",
+            }
         }
-    }
+    
+    CONTEXT_PROCESSORS = [
+        'actionkit.context_processors.globals',
+        ]
 
-CONTEXT_PROCESSORS = [
-    'actionkit.context_processors.globals',
-    ]
 
-
-URLCONFS = [
-    (r'', 'actionkit.urls'),
-    ]
+    URLCONFS = [
+        (r'', 'actionkit.urls'),
+        ]
 
