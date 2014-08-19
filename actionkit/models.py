@@ -313,6 +313,51 @@ class EventCampaign(models.Model):
         db_table = "events_campaign"
         managed = False
 
+class Event(models.Model):
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    address1 = models.CharField(max_length=765)
+    address2 = models.CharField(max_length=765)
+    city = models.CharField(max_length=765)
+    state = models.CharField(max_length=765)
+    region = models.CharField(max_length=765)
+    postal = models.CharField(max_length=765)
+    zip = models.CharField(max_length=15)
+    plus4 = models.CharField(max_length=12)
+    country = models.CharField(max_length=765)
+
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+
+    campaign = models.ForeignKey(EventCampaign)
+
+    title = models.CharField(max_length=765)
+
+    creator = models.ForeignKey(CoreUser)
+
+    starts_at = models.DateTimeField(null=True)
+    ends_at = models.DateTimeField(null=True)    
+
+    status = models.CharField(max_length=32)
+    host_is_confirmed = models.BooleanField()
+    is_private = models.BooleanField()
+    is_approved = models.BooleanField()
+    attendee_count = models.IntegerField()
+    max_attendees = models.IntegerField()
+
+    venue = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255)
+    public_description = models.TextField()
+    directions = models.TextField()
+    note_to_attendees = models.TextField()
+    notes = models.TextField()
+    starts_at_utc = models.DateTimeField(null=True)
+    ends_at_utc = models.DateTimeField(null=True)
+
+
+
 class CmsPetitionForm(models.Model):
     id = models.IntegerField(primary_key=True)
     page = models.OneToOneField(CorePage)
