@@ -1,6 +1,7 @@
 from actionkit.utils import get_client as Client
 import os
 
+"""
 ACTIONKIT_API_HOST = os.environ['ACTIONKIT_API_HOST']
 ACTIONKIT_API_USER = os.environ['ACTIONKIT_API_USER']
 ACTIONKIT_API_PASSWORD = os.environ['ACTIONKIT_API_PASSWORD']
@@ -14,7 +15,7 @@ SETTINGS = {
 try:
     import django
 except ImportError:
-    djang = None
+    django = None
 
 if django is not None:
     ACTIONKIT_DATABASE_NAME = os.environ['ACTIONKIT_DATABASE_NAME']
@@ -43,3 +44,4 @@ if django is not None:
         (r'', 'actionkit.urls'),
         ]
 
+"""

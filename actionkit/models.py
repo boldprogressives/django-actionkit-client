@@ -356,6 +356,9 @@ class Event(models.Model):
     starts_at_utc = models.DateTimeField(null=True)
     ends_at_utc = models.DateTimeField(null=True)
 
+    class Meta:
+        db_table = "events_event"
+        managed = False
 
 
 class CmsPetitionForm(models.Model):
