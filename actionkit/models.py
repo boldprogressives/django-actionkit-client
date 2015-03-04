@@ -125,6 +125,15 @@ class CorePage(models.Model):
         db_table = u'core_page'
         managed = False
 
+class CorePageField(models.Model):
+    parent = models.ForeignKey(CorePage, related_name='fields')
+    name = models.TextField()
+    value = models.TextField()
+    class Meta:
+        db_table = 'core_pagefield'
+        managed = False
+
+
 class CoreAction(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
