@@ -71,6 +71,30 @@ class CoreUser(models.Model):
         return u", ".join(field for field in fields
                           if field and field.strip())
 
+class CoreList(models.Model):
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    hidden = models.BooleanField()
+    name = models.CharField(max_length=255)
+    notes = models.CharField(max_length=255, null=True, blank=True)
+    is_default = models.BooleanField()
+
+    class Meta:
+        db_table = u'core_list'
+        managed = False    
+    
+class CoreSubscription(models.Model):
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    user = models.ForeignKey(CoreUser)
+    list = models.ForeignKey(CoreList)
+
+    class Meta:
+        db_table = u'core_subscription'
+        managed = False    
+    
 class CoreUserField(models.Model):
     parent = models.ForeignKey(CoreUser, related_name='fields')
     name = models.TextField()
