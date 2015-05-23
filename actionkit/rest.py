@@ -33,7 +33,7 @@ class client(object):
 
     def __getattr__(self, attr):
         if not self.safety_net:
-            return ClientResourceHandler(attr, object_methods=["get", "put", "delete"],
+            return ClientResourceHandler(attr, object_methods=["get", "put", "delete", "patch"],
                                          collection_methods=["get", "post"])
             
         url = self.base_url + attr + "/schema/"
@@ -96,6 +96,13 @@ class ClientResourceHandler(object):
     def exists(self, id):
         return self._get(id)
 
+    def patch(self, id, **kw):
+        self.check_method("patch")
+        resp = request(self.base_url + "%s/" % id, "patch", 
+                       headers={'content-type': 'application/json'},
+                       data=json.dumps(kw))
+        return resp
+    
     def put(self, id, **kw):
         self.check_method("put")
         resp = request(self.base_url + "%s/" % id, "put", 
