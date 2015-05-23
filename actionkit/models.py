@@ -143,8 +143,10 @@ class CorePage(models.Model):
     goal = models.IntegerField(null=True, blank=True)
     goal_type = models.CharField(max_length=765)
     status = models.CharField(max_length=765)
-    #list = models.ForeignKey(CoreList)
+    list = models.ForeignKey(CoreList)
     hidden = models.IntegerField()
+    allow_multiple_responses = models.BooleanField()
+    
     class Meta:
         db_table = u'core_page'
         managed = False
