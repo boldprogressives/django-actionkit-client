@@ -101,7 +101,7 @@ class ClientResourceHandler(object):
         resp = request(self.base_url + "%s/" % id, "patch", 
                        headers={'content-type': 'application/json'},
                        data=json.dumps(kw))
-        return resp
+        assert resp.status_code == 202, (resp, resp.text)
     
     def put(self, id, **kw):
         self.check_method("put")
