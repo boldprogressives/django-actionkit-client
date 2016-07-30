@@ -397,6 +397,22 @@ class Event(models.Model):
         managed = False
 
 
+class EventSignup(models.Model):
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    user = models.ForeignKey(CoreUser)
+    event = models.ForeignKey(Event)
+    role = models.CharField(max_length=255)
+    status = models.CharField(max_length=255)
+    page = models.ForeignKey(CorePage)
+    attended = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "events_eventsignup"
+        managed = False
+
+
 class CmsPetitionForm(models.Model):
     id = models.IntegerField(primary_key=True)
     page = models.OneToOneField(CorePage)
