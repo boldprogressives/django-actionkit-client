@@ -212,6 +212,7 @@ class CoreOrder(models.Model):
     total = models.FloatField()
     status = models.CharField(max_length=255)
     import_id = models.CharField(max_length=32, null=True)
+    card_num_last_four = models.CharField(max_length=32, null=True)
     class Meta:
         db_table = u'core_order'
         managed = False
@@ -425,7 +426,10 @@ class CorePageFollowup(models.Model):
         managed = False
 
 from django.db import connections
-from django.utils.datastructures import SortedDict
+try:
+    from django.utils.datastructures import SortedDict
+except ImportError:
+    from collections import OrderedDict as SortedDict
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
