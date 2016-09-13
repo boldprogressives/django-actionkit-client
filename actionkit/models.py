@@ -396,6 +396,13 @@ class Event(models.Model):
         db_table = "events_event"
         managed = False
 
+class Eventfield(models.Model):
+    parent = models.ForeignKey(Event, related_name='fields')
+    name = models.TextField()
+    value = models.TextField()
+    class Meta:
+        db_table = 'events_eventfield'
+        managed = False
 
 class EventSignup(models.Model):
     id = models.IntegerField(primary_key=True)
