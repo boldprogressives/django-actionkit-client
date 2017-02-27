@@ -90,11 +90,23 @@ class CoreSubscription(models.Model):
     updated_at = models.DateTimeField()
     user = models.ForeignKey(CoreUser)
     list = models.ForeignKey(CoreList)
-
+    
     class Meta:
         db_table = u'core_subscription'
-        managed = False    
+        managed = False
+
+class CoreSubscriptionHistory(models.Model):
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    user = models.ForeignKey(CoreUser)
+    list = models.ForeignKey(CoreList)
+    change_id = models.IntegerField()
     
+    class Meta:
+        db_table = u'core_subscriptionhistory'
+        managed = False
+
 class CoreUserField(models.Model):
     parent = models.ForeignKey(CoreUser, related_name='fields')
     name = models.TextField()
