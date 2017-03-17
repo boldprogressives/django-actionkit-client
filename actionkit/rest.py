@@ -1,5 +1,19 @@
-from actionkit.models import QueryReport
-from django.conf import settings
+try:
+    from actionkit.models import QueryReport
+    from django.conf import settings
+except ImportError:
+    import os
+    QueryReport = None
+    NULL = object()
+    class Settings(object):
+        def __getattr__(self, attr, default=NULL):
+            try:
+                return os.environ[attr]
+            except KeyError:
+                if default is NULL:
+                    raise AttributeError
+                else:
+                    return default
 import json
 import requests
 from requests.auth import HTTPBasicAuth
@@ -171,6 +185,9 @@ def unhide_report(report_id):
     if not host.startswith("https"):
         host = "https://" + host
 
+    if QueryReport is None:
+        raise RuntimeError("this function requires Django for some reason.")
+    
     report = QueryReport.objects.using("ak").select_related("report_ptr").get(
         report_ptr__id=report_id)
     data = json.dumps(dict(hidden=False, 
