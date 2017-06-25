@@ -71,6 +71,26 @@ class CoreUser(models.Model):
         return u", ".join(field for field in fields
                           if field and field.strip())
 
+class CoreUserMerge(models.Model):
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    primary_id = models.ForeignKey(CoreUser, related_name='merges')
+    status = models.CharField(max_length=255)
+    class Meta:
+        db_table = u'core_usermerge'
+        managed = False
+
+
+class CoreUserMergeUsers(models.Model):
+    id = models.IntegerField(primary_key=True)
+    usermerge_id = models.ForeignKey(CoreUserMerge, related_name='mergeusers')
+    user_id = models.ForeignKey(CoreUser, related_name='mergeusers')
+    class Meta:
+        db_table = u'core_usermerge_users'
+        managed = False
+
+
 class CoreList(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
