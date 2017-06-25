@@ -75,7 +75,7 @@ class CoreUserMerge(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    primary_id = models.ForeignKey(CoreUser, related_name='merges')
+    primary = models.ForeignKey(CoreUser, related_name='merges')
     status = models.CharField(max_length=255)
     class Meta:
         db_table = u'core_usermerge'
@@ -84,8 +84,8 @@ class CoreUserMerge(models.Model):
 
 class CoreUserMergeUsers(models.Model):
     id = models.IntegerField(primary_key=True)
-    usermerge_id = models.ForeignKey(CoreUserMerge, related_name='mergeusers')
-    user_id = models.ForeignKey(CoreUser, related_name='mergeusers')
+    usermerge = models.ForeignKey(CoreUserMerge, related_name='mergeusers')
+    user = models.ForeignKey(CoreUser, related_name='mergeusers')
     class Meta:
         db_table = u'core_usermerge_users'
         managed = False
