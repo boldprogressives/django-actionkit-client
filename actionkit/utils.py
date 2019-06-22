@@ -7,8 +7,15 @@ except ImportError:
             return os.environ[attr]
     settings = Settings()
 
-from urlparse import urlparse
-import xmlrpclib
+try:
+    from urllib import parse as urlparse
+except ImportError:
+    from urlparse import urlparse
+
+try:
+    from xmlrpc.client import ServerProxy as Server
+except ImportError:
+    from xmlrpclib import Server
 
 def get_client():
     host = settings.ACTIONKIT_API_HOST
@@ -20,5 +27,5 @@ def get_client():
             settings.ACTIONKIT_API_USER,
             settings.ACTIONKIT_API_PASSWORD,
             host.netloc)
-    actionkit = xmlrpclib.Server(url)
+    actionkit = Server(url)
     return actionkit

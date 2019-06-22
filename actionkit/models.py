@@ -15,7 +15,7 @@ class Report(models.Model):
         managed = False
 
 class QueryReport(models.Model):
-    report_ptr = models.ForeignKey(Report, primary_key=True)
+    report_ptr = models.ForeignKey(Report, primary_key=True, on_delete=models.DO_NOTHING)
     sql = models.TextField()
     class Meta:
         db_table = u'reports_queryreport'
@@ -49,7 +49,7 @@ class CoreUser(models.Model):
     plus4 = models.CharField(max_length=12)
     country = models.CharField(max_length=765)
     source = models.CharField(max_length=765)
-    lang = models.ForeignKey(CoreLanguage, null=True, blank=True)
+    lang = models.ForeignKey(CoreLanguage, null=True, blank=True, on_delete=models.DO_NOTHING)
     rand_id = models.IntegerField()
     class Meta:
         db_table = u'core_user'
@@ -75,7 +75,7 @@ class CoreUserMerge(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    primary = models.ForeignKey(CoreUser, related_name='merges')
+    primary = models.ForeignKey(CoreUser, related_name='merges', on_delete=models.DO_NOTHING)
     status = models.CharField(max_length=255)
     class Meta:
         db_table = u'core_usermerge'
@@ -84,8 +84,8 @@ class CoreUserMerge(models.Model):
 
 class CoreUserMergeUsers(models.Model):
     id = models.IntegerField(primary_key=True)
-    usermerge = models.ForeignKey(CoreUserMerge, related_name='mergeusers')
-    user = models.ForeignKey(CoreUser, related_name='mergeusers')
+    usermerge = models.ForeignKey(CoreUserMerge, related_name='mergeusers', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CoreUser, related_name='mergeusers', on_delete=models.DO_NOTHING)
     class Meta:
         db_table = u'core_usermerge_users'
         managed = False
@@ -108,8 +108,8 @@ class CoreSubscription(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    user = models.ForeignKey(CoreUser)
-    list = models.ForeignKey(CoreList)
+    user = models.ForeignKey(CoreUser, on_delete=models.DO_NOTHING)
+    list = models.ForeignKey(CoreList, on_delete=models.DO_NOTHING)
     
     class Meta:
         db_table = u'core_subscription'
@@ -119,8 +119,8 @@ class CoreSubscriptionHistory(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    user = models.ForeignKey(CoreUser)
-    list = models.ForeignKey(CoreList)
+    user = models.ForeignKey(CoreUser, on_delete=models.DO_NOTHING)
+    list = models.ForeignKey(CoreList, on_delete=models.DO_NOTHING)
     change_id = models.IntegerField()
     
     class Meta:
@@ -128,7 +128,7 @@ class CoreSubscriptionHistory(models.Model):
         managed = False
 
 class CoreUserField(models.Model):
-    parent = models.ForeignKey(CoreUser, related_name='fields')
+    parent = models.ForeignKey(CoreUser, related_name='fields', on_delete=models.DO_NOTHING)
     name = models.TextField()
     value = models.TextField()
     class Meta:
@@ -136,7 +136,7 @@ class CoreUserField(models.Model):
         managed = False
 
 class CoreLocation(models.Model):
-    user = models.OneToOneField(CoreUser, related_name="location", primary_key=True)
+    user = models.OneToOneField(CoreUser, related_name="location", primary_key=True, on_delete=models.DO_NOTHING)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     us_district = models.TextField(null=True, blank=True)
@@ -147,7 +147,7 @@ class CoreLocation(models.Model):
     
 class CorePhone(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.OneToOneField(CoreUser, related_name="phone")
+    user = models.OneToOneField(CoreUser, related_name="phone", on_delete=models.DO_NOTHING)
     type = models.CharField(max_length=25)
     phone = models.CharField(max_length=25)
     normalized_phone = models.CharField(max_length=25)
@@ -167,15 +167,15 @@ class CorePage(models.Model):
     updated_at = models.DateTimeField()
     title = models.CharField(max_length=765)
     name = models.CharField(max_length=765)
-    #hosted_with = models.ForeignKey(CoreHostingplatform)
+    #hosted_with = models.ForeignKey(CoreHostingplatform, on_delete=models.DO_NOTHING)
     url = models.CharField(max_length=765)
     type = models.CharField(max_length=765)
-    #lang = models.ForeignKey(CoreLanguage, null=True, blank=True)
-    #english_version = models.ForeignKey('self', null=True, blank=True)
+    #lang = models.ForeignKey(CoreLanguage, null=True, blank=True, on_delete=models.DO_NOTHING)
+    #english_version = models.ForeignKey('self', null=True, blank=True, on_delete=models.DO_NOTHING)
     goal = models.IntegerField(null=True, blank=True)
     goal_type = models.CharField(max_length=765)
     status = models.CharField(max_length=765)
-    list = models.ForeignKey(CoreList)
+    list = models.ForeignKey(CoreList, on_delete=models.DO_NOTHING)
     hidden = models.IntegerField()
     allow_multiple_responses = models.BooleanField()
     
@@ -184,7 +184,7 @@ class CorePage(models.Model):
         managed = False
 
 class CorePageField(models.Model):
-    parent = models.ForeignKey(CorePage, related_name='fields')
+    parent = models.ForeignKey(CorePage, related_name='fields', on_delete=models.DO_NOTHING)
     name = models.TextField()
     value = models.TextField()
     class Meta:
@@ -196,16 +196,16 @@ class CoreAction(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    user = models.ForeignKey(CoreUser,related_name="action")
-    #mailing = models.ForeignKey(CoreMailing, null=True, blank=True,related_name="related_mailer")
-    page = models.ForeignKey(CorePage)
+    user = models.ForeignKey(CoreUser,related_name="action", on_delete=models.DO_NOTHING)
+    #mailing = models.ForeignKey(CoreMailing, null=True, blank=True,related_name="related_mailer", on_delete=models.DO_NOTHING)
+    page = models.ForeignKey(CorePage, on_delete=models.DO_NOTHING)
     link = models.IntegerField(null=True, blank=True)
     source = models.CharField(max_length=765)
     opq_id = models.CharField(max_length=765)
     created_user = models.IntegerField()
     subscribed_user = models.IntegerField()
-    #referring_user = models.ForeignKey(CoreUser, null=True, blank=True)
-    #referring_mailing = models.ForeignKey(CoreMailing, null=True, blank=True)
+    #referring_user = models.ForeignKey(CoreUser, null=True, blank=True, on_delete=models.DO_NOTHING)
+    #referring_mailing = models.ForeignKey(CoreMailing, null=True, blank=True, on_delete=models.DO_NOTHING)
     status = models.CharField(max_length=765)
     taf_emails_sent = models.IntegerField(null=True, blank=True)
     class Meta:
@@ -213,7 +213,7 @@ class CoreAction(models.Model):
         managed = False
         
 class CoreActionField(models.Model):
-    parent = models.ForeignKey(CoreAction, related_name='fields')
+    parent = models.ForeignKey(CoreAction, related_name='fields', on_delete=models.DO_NOTHING)
     name = models.TextField()
     value = models.TextField()
     class Meta:
@@ -229,8 +229,8 @@ class CoreTag(models.Model):
     
 class CorePageTag(models.Model):
     id = models.IntegerField(primary_key=True)
-    page = models.ForeignKey(CorePage, related_name="pagetags")
-    tag = models.ForeignKey(CoreTag, related_name="pagetags")
+    page = models.ForeignKey(CorePage, related_name="pagetags", on_delete=models.DO_NOTHING)
+    tag = models.ForeignKey(CoreTag, related_name="pagetags", on_delete=models.DO_NOTHING)
     class Meta:
         db_table = u'core_page_tags'
         managed = False
@@ -239,8 +239,8 @@ class CorePageTag(models.Model):
 class CoreOrder(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    user = models.ForeignKey(CoreUser, related_name="orders")
-    action = models.ForeignKey(CoreAction, related_name="orders")
+    user = models.ForeignKey(CoreUser, related_name="orders", on_delete=models.DO_NOTHING)
+    action = models.ForeignKey(CoreAction, related_name="orders", on_delete=models.DO_NOTHING)
     total = models.FloatField()
     status = models.CharField(max_length=255)
     import_id = models.CharField(max_length=32, null=True)
@@ -253,7 +253,7 @@ class CoreTransaction(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     type = models.CharField(max_length=255)
-    order = models.ForeignKey(CoreOrder, related_name="transactions")
+    order = models.ForeignKey(CoreOrder, related_name="transactions", on_delete=models.DO_NOTHING)
     account = models.CharField(max_length=255)
     amount = models.FloatField()
     success = models.BooleanField()
@@ -265,12 +265,12 @@ class CoreTransaction(models.Model):
 class CoreOrderRecurring(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    order = models.ForeignKey(CoreOrder, related_name="recurrences")
-    action = models.ForeignKey(CoreAction, related_name="recurrences")
+    order = models.ForeignKey(CoreOrder, related_name="recurrences", on_delete=models.DO_NOTHING)
+    action = models.ForeignKey(CoreAction, related_name="recurrences", on_delete=models.DO_NOTHING)
     exp_date = models.CharField(max_length=6)
     recurring_id = models.CharField(max_length=255)
     account = models.CharField(max_length=255, null=True)
-    user = models.ForeignKey(CoreUser, related_name="recurrences")
+    user = models.ForeignKey(CoreUser, related_name="recurrences", on_delete=models.DO_NOTHING)
     start = models.DateField()
     occurrences = models.IntegerField(null=True)
     period = models.CharField(max_length=255)
@@ -294,7 +294,7 @@ class CoreMailingSubject(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     text = models.CharField(max_length=255)
-    mailing = models.ForeignKey(CoreMailing)
+    mailing = models.ForeignKey(CoreMailing, on_delete=models.DO_NOTHING)
     class Meta:
         db_table = u'core_mailingsubject'
         managed = False
@@ -303,15 +303,15 @@ class CoreClickUrl(models.Model):
     id = models.IntegerField(primary_key=True)
     url = models.CharField(max_length=255)
     created_at = models.DateTimeField()
-    page = models.ForeignKey(CorePage)
+    page = models.ForeignKey(CorePage, on_delete=models.DO_NOTHING)
     class Meta:
         db_table = u'core_clickurl'
         managed = False
 
 class CoreClick(models.Model):
-    clickurl = models.ForeignKey(CoreClickUrl)
-    user = models.ForeignKey(CoreUser)
-    mailing = models.ForeignKey(CoreMailing)
+    clickurl = models.ForeignKey(CoreClickUrl, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CoreUser, on_delete=models.DO_NOTHING)
+    mailing = models.ForeignKey(CoreMailing, on_delete=models.DO_NOTHING)
     link_number = models.IntegerField(null=True)
     source = models.CharField(max_length=255)
     referring_user_id = models.IntegerField(null=True)
@@ -321,17 +321,17 @@ class CoreClick(models.Model):
         managed = False
 
 class CoreOpen(models.Model):
-    user = models.ForeignKey(CoreUser, related_name="email_opens")
-    mailing = models.ForeignKey(CoreMailing)
+    user = models.ForeignKey(CoreUser, related_name="email_opens", on_delete=models.DO_NOTHING)
+    mailing = models.ForeignKey(CoreMailing, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(primary_key=True)
     class Meta:
         db_table = u'core_open'
         managed = False
 
 class CoreUserMailing(models.Model):
-    mailing = models.ForeignKey(CoreMailing)
-    user = models.ForeignKey(CoreUser)
-    subject = models.ForeignKey(CoreMailingSubject)
+    mailing = models.ForeignKey(CoreMailing, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CoreUser, on_delete=models.DO_NOTHING)
+    subject = models.ForeignKey(CoreMailingSubject, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(primary_key=True)    
     class Meta:
         db_table = u'core_usermailing'
@@ -399,11 +399,11 @@ class Event(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
 
-    campaign = models.ForeignKey(EventCampaign)
+    campaign = models.ForeignKey(EventCampaign, on_delete=models.DO_NOTHING)
 
     title = models.CharField(max_length=765)
 
-    creator = models.ForeignKey(CoreUser)
+    creator = models.ForeignKey(CoreUser, on_delete=models.DO_NOTHING)
 
     starts_at = models.DateTimeField(null=True)
     ends_at = models.DateTimeField(null=True)    
@@ -429,7 +429,7 @@ class Event(models.Model):
         managed = False
 
 class Eventfield(models.Model):
-    parent = models.ForeignKey(Event, related_name='fields')
+    parent = models.ForeignKey(Event, related_name='fields', on_delete=models.DO_NOTHING)
     name = models.TextField()
     value = models.TextField()
     class Meta:
@@ -440,11 +440,11 @@ class EventSignup(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    user = models.ForeignKey(CoreUser)
-    event = models.ForeignKey(Event)
+    user = models.ForeignKey(CoreUser, on_delete=models.DO_NOTHING)
+    event = models.ForeignKey(Event, on_delete=models.DO_NOTHING)
     role = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
-    page = models.ForeignKey(CorePage)
+    page = models.ForeignKey(CorePage, on_delete=models.DO_NOTHING)
     attended = models.BooleanField(default=False)
 
     class Meta:
@@ -454,7 +454,7 @@ class EventSignup(models.Model):
 
 class CmsPetitionForm(models.Model):
     id = models.IntegerField(primary_key=True)
-    page = models.OneToOneField(CorePage)
+    page = models.OneToOneField(CorePage, on_delete=models.DO_NOTHING)
     templateset_id = models.IntegerField()
 
     created_at = models.DateTimeField()
@@ -474,7 +474,7 @@ class CmsPetitionForm(models.Model):
 
 class CorePageFollowup(models.Model):
     id = models.IntegerField(primary_key=True)
-    page = models.OneToOneField(CorePage)
+    page = models.OneToOneField(CorePage, on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = u'core_pagefollowup'
