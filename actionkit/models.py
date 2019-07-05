@@ -168,6 +168,7 @@ class CorePage(models.Model):
     title = models.CharField(max_length=765)
     name = models.CharField(max_length=765)
     #hosted_with = models.ForeignKey(CoreHostingplatform)
+    notes = models.CharField(max_length=255, null=True, blank=True)
     url = models.CharField(max_length=765)
     type = models.CharField(max_length=765)
     #lang = models.ForeignKey(CoreLanguage, null=True, blank=True)
