@@ -154,7 +154,11 @@ def run_query(sql):
             settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
                          headers={'content-type': 'application/json',
                                   'accept': 'application/json'},
-                         data=json.dumps({'query': sql}),
+                         data=json.dumps({
+                             'query': sql,
+                             'refresh': True,
+                             'cache_duration': 1,
+                         }),
                          timeout=TIMEOUT)
     assert resp.status_code == 200, resp.text
     return resp.json()
