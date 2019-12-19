@@ -165,7 +165,8 @@ def run_query(sql, api_host=None, api_user=None, api_password=None, format=None)
         host = "https://" + host
     
     url = "%s/rest/v1/report/run/sql/" % host
-    data = json.dumps({'query': sql})
+
+    data = json.dumps({'query': sql, 'refresh': True, 'cache_duration': 1})
     headers = {'content-type': 'application/json',
                'accept': 'application/json'}
     if format and 'csv' in format:
