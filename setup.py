@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.16'
+version = '0.18'
 
 setup(name='django-actionkit-client',
       version=version,

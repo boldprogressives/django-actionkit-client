@@ -17,31 +17,45 @@ except ImportError:
 import json
 import requests
 from requests.auth import HTTPBasicAuth
+from csv import DictReader
 
 TIMEOUT = getattr(settings, 'ACTIONKIT_API_TIMEOUT', None)
 
 def request(url, method, **kw):
     if 'timeout' not in kw and TIMEOUT is not None:
         kw['timeout'] = TIMEOUT
+
+    api_user = kw.pop('api_user', settings.ACTIONKIT_API_USER)
+    api_password = kw.pop('api_password', settings.ACTIONKIT_API_PASSWORD)
+        
     return getattr(requests, method)(
         url, allow_redirects=False, 
-        auth=(settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
+        auth=(api_user, api_password),
         **kw)
 
 class client(object):
-    def __init__(self, safety_net=True):
+    def __init__(
+            self,
+            safety_net=True,
+            api_host=None,
+            api_user=None,
+            api_password=None
+    ):
         self.safety_net = safety_net
-
+        self.api_host = api_host or settings.ACTIONKIT_API_HOST
+        self.api_user = api_user or settings.ACTIONKIT_API_USER
+        self.api_password = api_password or settings.ACTIONKIT_API_PASSWORD
+        
     @property
     def base_url(self):
-        host = settings.ACTIONKIT_API_HOST
+        host = self.api_host
         if not host.startswith("https"):
             host = "https://" + host
         url = "%s/rest/v1/" % host
         return url
 
     def dir(self):
-        resp = request(self.base_url, "get")
+        resp = request(self.base_url, "get", api_user=self.api_user, api_password=self.api_password)
         assert resp.status_code == 200, resp.text
         return resp.json.keys()
 
@@ -51,7 +65,7 @@ class client(object):
                                          collection_methods=["get", "post"])
             
         url = self.base_url + attr + "/schema/"
-        resp = request(url, "get")
+        resp = request(url, "get", api_user=self.api_user, api_password=self.api_password)
                             
         if resp.status_code == 404:
             raise AttributeError("No known resource %s" % attr)
@@ -95,7 +109,7 @@ class ClientResourceHandler(object):
 
     def _get(self, id):
         self.check_method("get")
-        resp = request(self.base_url + "%s/" % id, "get")
+        resp = request(self.base_url + "%s/" % id, "get", api_user=self.api_user, api_password=self.api_password)
         if resp.status_code == 404:
             return None
         assert resp.status_code == 200, resp
@@ -112,21 +126,22 @@ class ClientResourceHandler(object):
 
     def patch(self, id, **kw):
         self.check_method("patch")
-        resp = request(self.base_url + "%s/" % id, "patch", 
+        resp = request(self.base_url + "%s/" % id, "patch",
+                       api_user=self.api_user, api_password=self.api_password,
                        headers={'content-type': 'application/json'},
                        data=json.dumps(kw))
         assert resp.status_code == 202, (resp, resp.text)
     
     def put(self, id, **kw):
         self.check_method("put")
-        resp = request(self.base_url + "%s/" % id, "put", 
+        resp = request(self.base_url + "%s/" % id, "put", api_user=self.api_user, api_password=self.api_password, 
                        headers={'content-type': 'application/json'},
                        data=json.dumps(kw))
         assert resp.status_code == 204, (resp, resp.text)
         
     def delete(self, id):
         self.check_method("delete")
-        resp = request(self.base_url + "%s/" % id, "delete")        
+        resp = request(self.base_url + "%s/" % id, "delete", api_user=self.api_user, api_password=self.api_password)        
         assert resp.status_code == 204, (resp, resp.text)
         
     def list(self):
@@ -134,7 +149,7 @@ class ClientResourceHandler(object):
 
     def create(self, **kw):
         self.check_collection_method("post")
-        resp = request(self.base_url, "post", 
+        resp = request(self.base_url, "post", api_user=self.api_user, api_password=self.api_password, 
                        headers={'content-type': 'application/json'},
                        data=json.dumps(kw))
         assert resp.status_code == 201, (resp, resp.text)
@@ -144,19 +159,31 @@ class ClientResourceHandler(object):
         id = id.strip("/")
         return id
 
-def run_query(sql):
-    host = settings.ACTIONKIT_API_HOST
+def run_query(sql, api_host=None, api_user=None, api_password=None, format=None):
+    host = api_host or settings.ACTIONKIT_API_HOST
     if not host.startswith("https"):
         host = "https://" + host
     
     url = "%s/rest/v1/report/run/sql/" % host
-    resp = requests.post(url, auth=HTTPBasicAuth(
-            settings.ACTIONKIT_API_USER, settings.ACTIONKIT_API_PASSWORD),
-                         headers={'content-type': 'application/json',
-                                  'accept': 'application/json'},
-                         data=json.dumps({'query': sql}),
-                         timeout=TIMEOUT)
+    data = json.dumps({'query': sql})
+    headers = {'content-type': 'application/json',
+               'accept': 'application/json'}
+    if format and 'csv' in format:
+        headers['accept'] = 'text/csv'
+        
+    resp = requests.post(
+        url, auth=HTTPBasicAuth(
+            api_user or settings.ACTIONKIT_API_USER,
+            api_password or settings.ACTIONKIT_API_PASSWORD
+        ),
+        headers=headers,
+        data=data,
+        timeout=TIMEOUT
+    )
     assert resp.status_code == 200, resp.text
+
+    if format and 'csv' in format:
+        return DictReader(resp.iter_lines(decode_unicode=True))
     return resp.json()
 
 def create_report(sql, description, name, short_name):
