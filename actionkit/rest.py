@@ -146,8 +146,11 @@ class ClientResourceHandler(object):
         resp = request(self.base_url + "%s/" % id, "delete", api_user=self.api_user, api_password=self.api_password)        
         assert resp.status_code == 204, (resp, resp.text)
         
-    def list(self):
+    def list(self, **kw):
         self.check_collection_method("get")
+        resp = request(self.base_url, "get", params=kw, api_user=self.api_user, api_password=self.api_password)        
+        assert resp.status_code == 200, (resp, resp.text)        
+        return resp.json()
 
     def create(self, **kw):
         self.check_collection_method("post")
