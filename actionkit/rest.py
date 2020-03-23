@@ -38,7 +38,7 @@ def request(url, method, **kw):
 class client(object):
     def __init__(
             self,
-            safety_net=True,
+            safety_net=False,
             api_host=None,
             api_user=None,
             api_password=None
@@ -64,7 +64,8 @@ class client(object):
     def __getattr__(self, attr):
         if not self.safety_net:
             return ClientResourceHandler(attr, object_methods=["get", "put", "delete", "patch"],
-                                         collection_methods=["get", "post"])
+                                         collection_methods=["get", "post"], 
+                                         api_user=self.api_user, api_password=self.api_password, api_host=self.api_host)
             
         url = self.base_url + attr + "/schema/"
         resp = request(url, "get", api_user=self.api_user, api_password=self.api_password)
@@ -84,10 +85,16 @@ class ResourceDoesNotExist(Exception):
     pass
 
 class ClientResourceHandler(object):
-    def __init__(self, resource, object_methods=[], collection_methods=[]):
+    def __init__(self, resource, object_methods=[], collection_methods=[],
+                 api_host=None,
+                 api_user=None,
+                 api_password=None):
         self.resource = resource
         self.object_methods = object_methods
         self.collection_methods = collection_methods
+        self.api_host = api_host or settings.ACTIONKIT_API_HOST
+        self.api_user = api_user or settings.ACTIONKIT_API_USER
+        self.api_password = api_password or settings.ACTIONKIT_API_PASSWORD
 
     def __repr__(self):
         return "<ResourceHandler %s %s>" % (self.resource, 
