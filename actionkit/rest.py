@@ -14,6 +14,8 @@ except ImportError:
                     raise AttributeError
                 else:
                     return default
+    settings = Settings()
+
 import json
 import requests
 from requests.auth import HTTPBasicAuth
