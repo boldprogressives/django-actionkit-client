@@ -166,7 +166,7 @@ class ClientResourceHandler(object):
                        data=json.dumps(kw))
         assert resp.status_code == 201, (resp, resp.text)
         location = resp.headers['Location']
-        if '/action/' not in self.base_url:
+        if '/action/' not in self.base_url and '/eraser/' not in self.base_url:
             assert location.startswith(self.base_url), "Unexpected location %s" % location
             id = location[len(self.base_url):]
         else:
