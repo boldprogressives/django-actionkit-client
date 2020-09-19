@@ -152,7 +152,25 @@ class ClientResourceHandler(object):
         self.check_method("delete")
         resp = request(self.base_url + "%s/" % id, "delete", api_user=self.api_user, api_password=self.api_password)        
         assert resp.status_code == 204, (resp, resp.text)
+
+    def request(self, path, **kw):
+        resp = request(self.base_url + path, "get", params=kw, api_user=self.api_user, api_password=self.api_password)
+        assert resp.status_code == 200, (resp, resp.text)        
+        return resp.json()
+
+    def fetch_all(self, path, **kw):
+        objects = []
+        kw['_limit'] = 100
+        resp = self.request(path, **kw)
+        objects.extend(resp.get('objects', []))
         
+        while resp.get('meta', {}).get('next'):
+            kw['_offset'] = resp['meta']['offset'] + 100
+            resp = self.request(path, **kw)
+            objects.extend(resp.get('objects', []))            
+
+        return objects
+
     def list(self, **kw):
         self.check_collection_method("get")
         resp = request(self.base_url, "get", params=kw, api_user=self.api_user, api_password=self.api_password)        
