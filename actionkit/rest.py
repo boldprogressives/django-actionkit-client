@@ -16,6 +16,7 @@ except ImportError:
                     return default
     settings = Settings()
 
+import os
 import json
 import requests
 from requests.auth import HTTPBasicAuth
@@ -29,11 +30,22 @@ def request(url, method, **kw):
 
     api_user = kw.pop('api_user', settings.ACTIONKIT_API_USER)
     api_password = kw.pop('api_password', settings.ACTIONKIT_API_PASSWORD)
-        
-    return getattr(requests, method)(
-        url, allow_redirects=False, 
-        auth=(api_user, api_password),
-        **kw)
+
+    if 'FIXIE_URL' in os.environ:
+        proxyDict = {
+            "http"  : os.environ.get('FIXIE_URL', ''),
+            "https" : os.environ.get('FIXIE_URL', '')
+        }
+        getattr(requests, method)(
+            url, allow_redirects=False, 
+            auth=(api_user, api_password),
+            proxies=proxyDict,
+            **kw)
+    else:
+        return getattr(requests, method)(
+            url, allow_redirects=False, 
+            auth=(api_user, api_password),
+            **kw)
 
 class client(object):
     def __init__(
