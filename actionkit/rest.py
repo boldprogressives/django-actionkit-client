@@ -36,7 +36,7 @@ def request(url, method, **kw):
             "http"  : os.environ.get('FIXIE_URL', ''),
             "https" : os.environ.get('FIXIE_URL', '')
         }
-        getattr(requests, method)(
+        return getattr(requests, method)(
             url, allow_redirects=False, 
             auth=(api_user, api_password),
             proxies=proxyDict,
