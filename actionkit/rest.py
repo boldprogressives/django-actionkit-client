@@ -31,7 +31,16 @@ def request(url, method, **kw):
     api_user = kw.pop('api_user', settings.ACTIONKIT_API_USER)
     api_password = kw.pop('api_password', settings.ACTIONKIT_API_PASSWORD)
 
-    if 'FIXIE_URL' in os.environ:
+    if (
+            'FIXIE_URL' in os.environ
+            and
+            method.lower() == 'post':
+            and
+            url.endswith('/action/')
+    ):
+        # Route through static IP proxy server only when creating
+        # actions so that we can whitelist IPs and circumvent
+        # SPAM filters
         proxyDict = {
             "http"  : os.environ.get('FIXIE_URL', ''),
             "https" : os.environ.get('FIXIE_URL', '')
